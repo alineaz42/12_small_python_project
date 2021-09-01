@@ -35,8 +35,20 @@ class TicTacToe:
     def make_move(self, square, letter):
         if self.board[square] == ' ':
             self.board[square] = letter
+            if self.winner(square, letter):
+                self.current_winner = letter
             return True
         return False
+
+    def winner(self, square, letter):
+        row_ind = square//3
+        row = self.board[row_ind*3:(row_ind+1)*3]
+        if all([spot == letter for spot in row]):
+            return True
+        col_ind = square % 3
+        column = [self.board[col_ind+i*3] for i in range(3)]
+        if all([spot == letter for spot in column]):
+            return True
 
 
 def play(game, x_player, o_player, print_game=True):
@@ -48,9 +60,17 @@ def play(game, x_player, o_player, print_game=True):
             square = o_player.ge_moves(game)
         else:
             x_player.get_moves(game)
+
+        # define a functin to make move
         if game.make_move(square, letter):
             if print_game:
                 print(letter + f"makes a more to {square}")
                 game.print_board()
                 print(" ")  # an empty line
+            if game.current_winner:
+                if print_game:
+                    print(letter+"win")
+                return letter
             letter = "O" if letter == "X" else "X"
+        if print_game:
+            print("it\'s a tie")
